@@ -39,22 +39,26 @@ int main()
                 perror("listen");
                 exit(EXIT_FAILURE);
         }
-        // start connection
-        if ((socket_fd = accept(server_fd, (struct sockaddr *)&address,
-                                &addrlen)) < 0)
+
+        while (1)
         {
-                perror("accept");
-                exit(EXIT_FAILURE);
+                // start connection
+                if ((socket_fd = accept(server_fd, (struct sockaddr *)&address,
+                                        &addrlen)) < 0)
+                {
+                        perror("accept");
+                        exit(EXIT_FAILURE);
+                }
+                ssize_t valread;
+                char *buffer = malloc(BUFFER_SIZE);
+                char *hello = "Hello from server";
+
+                valread = read(socket_fd, buffer, BUFFER_SIZE - 1);
+                printf("Buffer %s\n", buffer);
+                send(socket_fd, hello, strlen(hello), 0);
+                printf("Message sent \n");
         }
-        //
-        ssize_t valread;
-        char *buffer = malloc(BUFFER_SIZE);
-        char *hello = "Hello from server";
-        valread = read(socket_fd, buffer, BUFFER_SIZE - 1);
-        printf("Buffer %s\n", buffer);
-        send(socket_fd, hello, strlen(hello), 0);
-        printf("Message sent \n");
-        
+
         // close socket and the server
         close(socket_fd);
         close(server_fd);
